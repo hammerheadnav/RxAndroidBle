@@ -45,7 +45,9 @@ public class RxBleGattCallback {
     private final Observable disconnectedErrorObservable = getOnConnectionStateChange()
             .filter(this::isDisconnectedOrDisconnecting)
             .doOnNext(rxBleConnectionState -> bluetoothGattBehaviorSubject.onCompleted())
-            .flatMap(rxBleConnectionState -> Observable.error(new BleDisconnectedException()));
+            .flatMap(rxBleConnectionState -> Observable.error(new BleDisconnectedException()))
+            .replay()
+            .autoConnect(0);
 
     private boolean isDisconnectedOrDisconnecting(RxBleConnectionState rxBleConnectionState) {
         return rxBleConnectionState == RxBleConnectionState.DISCONNECTED || rxBleConnectionState == RxBleConnectionState.DISCONNECTING;
@@ -59,9 +61,7 @@ public class RxBleGattCallback {
             super.onConnectionStateChange(gatt, status, newState);
             bluetoothGattBehaviorSubject.onNext(gatt);
 
-            if (propagateStatusErrorIfGattErrorOccurred(status, BleGattOperationType.CONNECTION_STATE)) {
-                return;
-            }
+            propagateStatusErrorIfGattErrorOccurred(status, BleGattOperationType.CONNECTION_STATE);
 
             Observable.just(mapConnectionStateToRxBleConnectionStatus(newState))
                     .compose(getSubscribeAndObserveOnTransformer())
@@ -252,7 +252,8 @@ public class RxBleGattCallback {
     private <T> Observable<T> withHandlingStatusError(Observable<T> observable) {
         //noinspection unchecked
         return Observable.merge(
-                (Observable<? extends T>) statusErrorSubject.asObservable(), // statusErrorSubject emits only errors
+                statusErrorSubject.asObservable(), // statusErrorSubject emits only errors
+                disconnectedErrorObservable,
                 observable
         );
     }
@@ -275,8 +276,12 @@ public class RxBleGattCallback {
         return disconnectedErrorObservable;
     }
 
+    /**
+     * @return Observable that emits RxBleConnectionState that matches BluetoothGatt's state.
+     * Does NOT emit errors even if status != GATT_SUCCESS.
+     */
     public Observable<RxBleConnectionState> getOnConnectionStateChange() {
-        return withHandlingStatusError(connectionStatePublishSubject);
+        return connectionStatePublishSubject;
     }
 
     public Observable<RxBleDeviceServices> getOnServicesDiscovered() {
