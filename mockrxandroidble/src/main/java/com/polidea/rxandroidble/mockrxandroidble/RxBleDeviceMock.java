@@ -7,6 +7,7 @@ import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.RxBleDevice;
 import com.polidea.rxandroidble.RxBleDeviceServices;
 import com.polidea.rxandroidble.exceptions.BleAlreadyConnectedException;
+import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +19,13 @@ import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.subjects.BehaviorSubject;
 
 import static com.polidea.rxandroidble.RxBleConnection.RxBleConnectionState.CONNECTED;
 import static com.polidea.rxandroidble.RxBleConnection.RxBleConnectionState.CONNECTING;
 import static com.polidea.rxandroidble.RxBleConnection.RxBleConnectionState.DISCONNECTED;
+import static com.polidea.rxandroidble.RxBleConnection.RxBleConnectionState.DISCONNECTING;
 
 public class RxBleDeviceMock implements RxBleDevice {
 
@@ -36,13 +39,15 @@ public class RxBleDeviceMock implements RxBleDevice {
     private byte[] scanRecord;
     private List<UUID> advertisedUUIDs;
     private AtomicBoolean isConnected = new AtomicBoolean(false);
+    private Observable<RxBleConnection.RxBleConnectionState> connectionEmitObservable;
 
     public RxBleDeviceMock(String name,
                            String macAddress,
                            byte[] scanRecord,
                            Integer rssi,
                            RxBleDeviceServices rxBleDeviceServices,
-                           Map<UUID, Observable<byte[]>> characteristicNotificationSources) {
+                           Map<UUID, Observable<byte[]>> characteristicNotificationSources,
+                           Observable<RxBleConnection.RxBleConnectionState> connectionEmitObservable) {
         this.name = name;
         this.macAddress = macAddress;
         this.rxBleConnection = new RxBleConnectionMock(rxBleDeviceServices,
@@ -51,6 +56,7 @@ public class RxBleDeviceMock implements RxBleDevice {
         this.rssi = rssi;
         this.scanRecord = scanRecord;
         this.advertisedUUIDs = new ArrayList<>();
+        this.connectionEmitObservable = connectionEmitObservable;
     }
 
     public void addAdvertisedUUID(UUID advertisedUUID) {
@@ -97,7 +103,19 @@ public class RxBleDeviceMock implements RxBleDevice {
     }
 
     private Observable<RxBleConnection> emitConnectionWithoutCompleting() {
-        return Observable.<RxBleConnection>never().startWith(rxBleConnection);
+        return connectionEmitObservable
+                .switchMap(new Func1<RxBleConnection.RxBleConnectionState, Observable<RxBleConnection>>() {
+                    @Override
+                    public Observable<RxBleConnection> call(RxBleConnection.RxBleConnectionState rxBleConnectionState) {
+                        if (rxBleConnectionState == DISCONNECTED || rxBleConnectionState == DISCONNECTING) {
+                            return Observable.error(new BleDisconnectedException(macAddress));
+                        } else if (rxBleConnectionState == CONNECTING) {
+                            return Observable.never();
+                        } else {
+                            return Observable.<RxBleConnection>never().startWith(rxBleConnection);
+                        }
+                    }
+                });
     }
 
     public List<UUID> getAdvertisedUUIDs() {

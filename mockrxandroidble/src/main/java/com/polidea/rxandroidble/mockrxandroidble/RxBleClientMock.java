@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattService;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.polidea.rxandroidble.RxBleClient;
+import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.RxBleDevice;
 import com.polidea.rxandroidble.RxBleDeviceServices;
 import com.polidea.rxandroidble.RxBleScanResult;
@@ -83,6 +84,7 @@ public class RxBleClientMock extends RxBleClient {
         private byte[] scanRecord;
         private RxBleDeviceServices rxBleDeviceServices;
         private Map<UUID, Observable<byte[]>> characteristicNotificationSources;
+        private Observable<RxBleConnection.RxBleConnectionState> connectionEmitObservable = Observable.just(RxBleConnection.RxBleConnectionState.CONNECTED);
 
         /**
          * Build a new {@link RxBleDevice}.
@@ -124,7 +126,8 @@ public class RxBleClientMock extends RxBleClient {
                     scanRecord,
                     rssi,
                     rxBleDeviceServices,
-                    characteristicNotificationSources);
+                    characteristicNotificationSources,
+                    connectionEmitObservable);
 
             for (BluetoothGattService service : rxBleDeviceServices.getBluetoothGattServices()) {
                 rxBleDeviceMock.addAdvertisedUUID(service.getUuid());
@@ -145,6 +148,12 @@ public class RxBleClientMock extends RxBleClient {
          */
         public DeviceBuilder deviceName(@NonNull String deviceName) {
             this.deviceName = deviceName;
+            return this;
+        }
+
+
+        public DeviceBuilder connectionEmitControllerSource(@NonNull Observable<RxBleConnection.RxBleConnectionState> connectionEmitObservable) {
+            this.connectionEmitObservable = connectionEmitObservable;
             return this;
         }
 
