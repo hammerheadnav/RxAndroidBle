@@ -110,6 +110,7 @@ public class RxBleDeviceMock implements RxBleDevice {
                         if (rxBleConnectionState == DISCONNECTED || rxBleConnectionState == DISCONNECTING) {
                             return Observable.error(new BleDisconnectedException(macAddress));
                         } else if (rxBleConnectionState == CONNECTING) {
+                            connectionStateBehaviorSubject.onNext(CONNECTING);
                             return Observable.never();
                         } else {
                             return Observable.<RxBleConnection>never().startWith(rxBleConnection);
