@@ -39,17 +39,17 @@ public class RxBleDeviceProvider {
     public RxBleDevice getBleDevice(String macAddress) {
         final RxBleDevice rxBleDevice = availableDevices.get(macAddress);
 
-        if (rxBleDevice != null) {
-            Log.d("RxBle", "bt_bt From Available Devices");
-            return rxBleDevice;
-        }
+//        if (rxBleDevice != null) {
+//            Log.d("RxBle", "bt_bt From Available Devices");
+//            return rxBleDevice;
+//        }
 
         synchronized (availableDevices) {
             final RxBleDevice secondCheckRxBleDevice = availableDevices.get(macAddress);
 
-            if (secondCheckRxBleDevice != null) {
-                return secondCheckRxBleDevice;
-            }
+//            if (secondCheckRxBleDevice != null) {
+//                return secondCheckRxBleDevice;
+//            }
 
             final BluetoothDevice bluetoothDevice = rxBleAdapterWrapper.getRemoteDevice(macAddress);
             final RxBleDeviceImpl newRxBleDevice = new RxBleDeviceImpl(
