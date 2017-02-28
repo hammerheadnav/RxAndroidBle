@@ -1,23 +1,26 @@
 package com.polidea.rxandroidble.internal.operations;
 
-import static rx.Observable.just;
-
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.os.DeadObjectException;
+
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
 import com.polidea.rxandroidble.internal.RxBleRadioOperation;
 import com.polidea.rxandroidble.internal.connection.RxBleGattCallback;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+
+import static rx.Observable.just;
 
 public class RxBleRadioOperationDisconnect extends RxBleRadioOperation<Void> {
 
@@ -66,7 +69,11 @@ public class RxBleRadioOperationDisconnect extends RxBleRadioOperation<Void> {
                         new Action1<BluetoothGatt>() {
                             @Override
                             public void call(BluetoothGatt bluetoothGatt) {
-                                bluetoothGatt.close();
+                                try {
+                                    bluetoothGatt.close();
+                                } catch (Exception deadObjExc) {
+                                    deadObjExc.printStackTrace();
+                                }
                             }
                         },
                         new Action1<Throwable>() {
