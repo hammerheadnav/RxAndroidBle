@@ -1,11 +1,9 @@
 package com.polidea.rxandroidble.internal.connection;
 
-import static com.polidea.rxandroidble.internal.connection.RxBleConnectionConnectorOperationsProvider.RxBleOperations;
-import static com.polidea.rxandroidble.internal.util.ObservableUtil.justOnNext;
-
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.Context;
+
 import com.polidea.rxandroidble.RxBleAdapterStateObservable.BleAdapterState;
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
@@ -13,12 +11,16 @@ import com.polidea.rxandroidble.internal.RxBleRadio;
 import com.polidea.rxandroidble.internal.operations.RxBleRadioOperationDisconnect;
 import com.polidea.rxandroidble.internal.util.BleConnectionCompat;
 import com.polidea.rxandroidble.internal.util.RxBleAdapterWrapper;
+
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Actions;
 import rx.functions.Func0;
 import rx.functions.Func1;
+
+import static com.polidea.rxandroidble.internal.connection.RxBleConnectionConnectorOperationsProvider.RxBleOperations;
+import static com.polidea.rxandroidble.internal.util.ObservableUtil.justOnNext;
 
 public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
 
@@ -56,24 +58,27 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                 final RxBleOperations operationsPair =
                         operationsProvider.provide(context, bluetoothDevice, autoConnect, connectionCompat, gattCallback);
 
-
-                return Observable.merge(
-                        rxBleRadio.queue(operationsPair.connect),
-                        adapterStateObservable
-                                .filter(new Func1<BleAdapterState, Boolean>() {
-                                    @Override
-                                    public Boolean call(BleAdapterState bleAdapterState) {
-                                        return !bleAdapterState.isUsable();
-                                    }
-                                })
-                                .flatMap(new Func1<BleAdapterState, Observable<BluetoothGatt>>() {
-                                    @Override
-                                    public Observable<BluetoothGatt> call(BleAdapterState bleAdapterState) {
-                                        return Observable.error(new BleDisconnectedException(bluetoothDevice.getAddress()));
-                                    }
-                                })
-                )
-                        .first()
+                return rxBleRadio.queue(operationsPair.disconnect).flatMap(new Func1<Void, Observable<BluetoothGatt>>() {
+                    @Override
+                    public Observable<BluetoothGatt> call(Void aVoid) {
+                        return Observable.merge(
+                                rxBleRadio.queue(operationsPair.connect),
+                                adapterStateObservable
+                                        .filter(new Func1<BleAdapterState, Boolean>() {
+                                            @Override
+                                            public Boolean call(BleAdapterState bleAdapterState) {
+                                                return !bleAdapterState.isUsable();
+                                            }
+                                        })
+                                        .flatMap(new Func1<BleAdapterState, Observable<BluetoothGatt>>() {
+                                            @Override
+                                            public Observable<BluetoothGatt> call(BleAdapterState bleAdapterState) {
+                                                return Observable.error(new BleDisconnectedException(bluetoothDevice.getAddress()));
+                                            }
+                                        })
+                        );
+                    }
+                }).first()
                         .flatMap(new Func1<BluetoothGatt, Observable<RxBleConnection>>() {
                             @Override
                             public Observable<RxBleConnection> call(BluetoothGatt bluetoothGatt) {
