@@ -134,6 +134,7 @@ public class RxBleRadioOperationConnect extends RxBleRadioOperation<BluetoothGat
         final Runnable onConnectionEstablishedRunnable = autoConnect ? emptyRunnable : releaseRadioRunnable;
         final Runnable onConnectCalledRunnable = autoConnect ? releaseRadioRunnable : emptyRunnable;
 
+
         getConnectedBluetoothGatt()
                 .compose(wrapWithTimeoutWhenNotAutoconnecting())
                 // when there are no subscribers there is no point of continuing work -> next will be disconnect operation
@@ -143,6 +144,7 @@ public class RxBleRadioOperationConnect extends RxBleRadioOperation<BluetoothGat
                         RxBleLog.d("No subscribers, finishing operation");
                     }
                 }))
+                .takeUntil(rxBleGattCallback.observeDisconnect())
                 .doOnCompleted(new Action0() {
                     @Override
                     public void call() {

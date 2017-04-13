@@ -79,7 +79,6 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                 return new Action0() {
                     @Override
                     public void call() {
-                        RxBleLog.e("UNSUBSCRIBING SO DISCONNECT");
                         enqueueDisconnectOperation(operationDisconnect);
                     }
                 };
