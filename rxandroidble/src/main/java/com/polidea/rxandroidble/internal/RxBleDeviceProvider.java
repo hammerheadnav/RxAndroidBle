@@ -1,7 +1,6 @@
 package com.polidea.rxandroidble.internal;
 
 import android.bluetooth.BluetoothDevice;
-import android.util.Log;
 
 import com.polidea.rxandroidble.RxBleAdapterStateObservable;
 import com.polidea.rxandroidble.RxBleDevice;
@@ -40,7 +39,6 @@ public class RxBleDeviceProvider {
         final RxBleDevice rxBleDevice = availableDevices.get(macAddress);
 
         if (rxBleDevice != null) {
-            Log.d("RxBle", "bt_bt From Available Devices");
             return rxBleDevice;
         }
 
@@ -67,7 +65,6 @@ public class RxBleDeviceProvider {
                             rxBleAdapterWrapper,
                             adapterStateObservable)
             );
-            Log.d("RxBle", "bt_bt From NEW Devices");
             availableDevices.put(macAddress, newRxBleDevice);
             return newRxBleDevice;
         }
