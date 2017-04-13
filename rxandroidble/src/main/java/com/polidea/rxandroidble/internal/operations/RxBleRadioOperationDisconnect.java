@@ -73,6 +73,7 @@ public class RxBleRadioOperationDisconnect extends RxBleRadioOperation<Void> {
                             new Action1<BluetoothGatt>() {
                                 @Override
                                 public void call(BluetoothGatt bluetoothGatt) {
+                                    bluetoothGatt.disconnect();
                                     bluetoothGatt.close();
                                 }
                             },
@@ -138,6 +139,7 @@ public class RxBleRadioOperationDisconnect extends RxBleRadioOperation<Void> {
                         @Override
                         public void call() {
                             bluetoothGatt.disconnect();
+                            bluetoothGatt.close();
                         }
                     });
                 }
