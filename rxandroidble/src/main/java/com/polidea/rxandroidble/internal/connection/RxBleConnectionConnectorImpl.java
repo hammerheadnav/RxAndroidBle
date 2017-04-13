@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import com.polidea.rxandroidble.RxBleAdapterStateObservable.BleAdapterState;
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.exceptions.BleDisconnectedException;
+import com.polidea.rxandroidble.internal.RxBleLog;
 import com.polidea.rxandroidble.internal.RxBleRadio;
 import com.polidea.rxandroidble.internal.operations.RxBleRadioOperationConnect;
 import com.polidea.rxandroidble.internal.operations.RxBleRadioOperationDisconnect;
@@ -92,6 +93,7 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                                         .flatMap(new Func1<BleAdapterState, Observable<BluetoothGatt>>() {
                                             @Override
                                             public Observable<BluetoothGatt> call(BleAdapterState bleAdapterState) {
+                                                RxBleLog.d("DISCONNECTED ERROR COMING FROM RXBLE ADAPTER OBS");
                                                 return Observable.error(new BleDisconnectedException(bluetoothDevice.getAddress()));
                                             }
                                         })

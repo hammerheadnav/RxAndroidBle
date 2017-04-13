@@ -57,6 +57,7 @@ public class RxBleGattCallback {
             .flatMap(new Func1<Pair<BluetoothGatt, RxBleConnectionState>, Observable<?>>() {
                 @Override
                 public Observable<?> call(Pair<BluetoothGatt, RxBleConnectionState> pair) {
+                    RxBleLog.d("DISCONNECTED ERROR COMING FROM GATT OBS");
                     return Observable.error(new BleDisconnectedException(pair.first.getDevice().getAddress()));
                 }
             })
