@@ -144,17 +144,6 @@ public class RxBleRadioOperationConnect extends RxBleRadioOperation<BluetoothGat
                         RxBleLog.d("No subscribers, finishing operation");
                     }
                 }))
-                .takeUntil(rxBleGattCallback.observeDisconnect().doOnNext(new Action1<Object>() {
-                    @Override
-                    public void call(Object o) {
-                        RxBleLog.d("********** GOT DISCONNECTED IN TAKE UNTIL");
-                    }
-                }).doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        RxBleLog.d("********** GOT ERROR DISCONNECTED IN TAKE UNTIL");
-                    }
-                }))
                 .doOnCompleted(new Action0() {
                     @Override
                     public void call() {
