@@ -69,11 +69,7 @@ public class RxBleRadioOperationDisconnect extends RxBleRadioOperation<Void> {
                         new Action1<BluetoothGatt>() {
                             @Override
                             public void call(BluetoothGatt bluetoothGatt) {
-                                try {
-                                    bluetoothGatt.close();
-                                } catch (Exception deadObjExc) {
-                                    deadObjExc.printStackTrace();
-                                }
+                                bluetoothGatt.close();
                             }
                         },
                         new Action1<Throwable>() {
