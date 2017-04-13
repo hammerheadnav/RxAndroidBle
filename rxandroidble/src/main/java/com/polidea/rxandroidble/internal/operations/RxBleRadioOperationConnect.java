@@ -75,6 +75,7 @@ public class RxBleRadioOperationConnect extends RxBleRadioOperation<BluetoothGat
     private final Runnable releaseRadioRunnable = new Runnable() {
         @Override
         public void run() {
+            RxBleLog.d("************Releasing Radio Semaphore");
             releaseRadio();
         }
     };
