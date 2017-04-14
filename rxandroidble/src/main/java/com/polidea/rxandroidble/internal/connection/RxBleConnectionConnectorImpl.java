@@ -57,7 +57,7 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                 }
 
                 final ConnectionComponent connectionComponent = connectionComponentBuilder.build();
-                RxBleRadioOperationConnect operationConnect = connectionComponent.connectOperationBuilder()
+                final RxBleRadioOperationConnect operationConnect = connectionComponent.connectOperationBuilder()
                         .setAutoConnect(autoConnect)
                         .build();
 
