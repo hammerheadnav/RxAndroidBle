@@ -150,6 +150,12 @@ public class RxBleRadioOperationConnect extends RxBleRadioOperation<BluetoothGat
                         onConnectionEstablishedRunnable.run();
                     }
                 })
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        RxBleLog.d("****************** ON ERROR *********************************");
+                    }
+                })
                 .doOnNext(new Action1<BluetoothGatt>() {
                     @Override
                     public void call(BluetoothGatt ignored) {
