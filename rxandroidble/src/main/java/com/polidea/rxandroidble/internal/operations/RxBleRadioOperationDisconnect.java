@@ -60,6 +60,7 @@ public class RxBleRadioOperationDisconnect extends RxBleRadioOperation<Void> {
         if (bluetoothGatt == null) {
             RxBleLog.w("Disconnect operation has been executed but GATT instance was null.");
             onCompleted();
+            releaseRadio();
         } else {
             (isDisconnected(bluetoothGatt) ? just(bluetoothGatt) : disconnect(bluetoothGatt))
                     .doOnTerminate(new Action0() {
