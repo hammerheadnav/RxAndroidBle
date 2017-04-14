@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import com.polidea.rxandroidble.internal.RxBleLog;
 
@@ -18,6 +19,7 @@ import java.lang.reflect.Method;
 import javax.inject.Inject;
 
 import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
+import static android.content.ContentValues.TAG;
 
 public class BleConnectionCompat {
 
@@ -40,7 +42,7 @@ public class BleConnectionCompat {
          * compared to
          * https://android.googlesource.com/platform/frameworks/base/+/android-6.0.1_r72/core/java/android/bluetooth/BluetoothGatt.java#739
          * issue: https://android.googlesource.com/platform/frameworks/base/+/d35167adcaa40cb54df8e392379dfdfe98bcdba2%5E%21/#F0
-          */
+         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || !autoConnect) {
             return connectGattCompat(bluetoothGattCallback, remoteDevice, autoConnect);
         }
@@ -54,13 +56,13 @@ public class BleConnectionCompat {
         try {
             RxBleLog.v("Trying to connectGatt using reflection.");
             Object iBluetoothGatt = getIBluetoothGatt(getIBluetoothManager());
-
             if (iBluetoothGatt == null) {
                 RxBleLog.w("Couldn't get iBluetoothGatt object");
                 return connectGattCompat(bluetoothGattCallback, remoteDevice, true);
             }
 
             BluetoothGatt bluetoothGatt = createBluetoothGatt(iBluetoothGatt, remoteDevice);
+            refreshDeviceCache(bluetoothGatt);
 
             if (bluetoothGatt == null) {
                 RxBleLog.w("Couldn't create BluetoothGatt object");
@@ -152,5 +154,19 @@ public class BleConnectionCompat {
         Field autoConnectField = bluetoothGatt.getClass().getDeclaredField("mAutoConnect");
         autoConnectField.setAccessible(true);
         autoConnectField.setBoolean(bluetoothGatt, autoConnect);
+    }
+
+    private boolean refreshDeviceCache(BluetoothGatt gatt) {
+        try {
+            BluetoothGatt localBluetoothGatt = gatt;
+            Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
+            if (localMethod != null) {
+                boolean bool = ((Boolean) localMethod.invoke(localBluetoothGatt, new Object[0])).booleanValue();
+                return bool;
+            }
+        } catch (Exception localException) {
+            Log.e(TAG, "An exception occured while refreshing device");
+        }
+        return false;
     }
 }
