@@ -84,7 +84,7 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                         }).flatMap(new Func1<Void, Observable<BluetoothGatt>>() {
                             @Override
                             public Observable<BluetoothGatt> call(Void aVoid) {
-                                return enqueueConnectOperation(operationConnect)
+                                return enqueueConnectOperation(operationConnect);
                             }
                         }).flatMap(new Func1<BluetoothGatt, Observable<RxBleConnection>>() {
                             @Override
