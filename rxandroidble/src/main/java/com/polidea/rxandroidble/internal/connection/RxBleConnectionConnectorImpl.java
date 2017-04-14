@@ -77,7 +77,8 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                                 );
                             }
                         })
-                        .doOnUnsubscribe(disconnect(connectionComponent.disconnectOperation()));
+                        .doOnUnsubscribe(disconnect(connectionComponent.disconnectOperation()))
+                        .doOnSubscribe(disconnect(connectionComponent.disconnectOperation()));
             }
 
             @NonNull
