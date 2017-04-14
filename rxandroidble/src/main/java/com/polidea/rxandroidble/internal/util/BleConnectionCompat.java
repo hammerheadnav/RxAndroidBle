@@ -54,10 +54,10 @@ public class BleConnectionCompat {
          */
 
         try {
-            RxBleLog.v("Trying to connectGatt using reflection.");
+            RxBleLog.d("Trying to connectGatt using reflection.");
             Object iBluetoothGatt = getIBluetoothGatt(getIBluetoothManager());
             if (iBluetoothGatt == null) {
-                RxBleLog.w("Couldn't get iBluetoothGatt object");
+                RxBleLog.d("Couldn't get iBluetoothGatt object");
                 return connectGattCompat(bluetoothGattCallback, remoteDevice, true);
             }
 
@@ -65,14 +65,15 @@ public class BleConnectionCompat {
             refreshDeviceCache(bluetoothGatt);
 
             if (bluetoothGatt == null) {
-                RxBleLog.w("Couldn't create BluetoothGatt object");
+                RxBleLog.d("Couldn't create BluetoothGatt object");
                 return connectGattCompat(bluetoothGattCallback, remoteDevice, true);
             }
 
             boolean connectedSuccessfully = connectUsingReflection(bluetoothGatt, bluetoothGattCallback, true);
 
             if (!connectedSuccessfully) {
-                RxBleLog.w("Connection using reflection failed, closing gatt");
+                RxBleLog.d("Connection using reflection failed, closing gatt");
+                bluetoothGatt.disconnect();
                 bluetoothGatt.close();
             }
 
@@ -83,13 +84,13 @@ public class BleConnectionCompat {
                 | InvocationTargetException
                 | InstantiationException
                 | NoSuchFieldException exception) {
-            RxBleLog.w(exception, "Error during reflection");
+            RxBleLog.d(exception, "Error during reflection");
             return connectGattCompat(bluetoothGattCallback, remoteDevice, true);
         }
     }
 
     private BluetoothGatt connectGattCompat(BluetoothGattCallback bluetoothGattCallback, BluetoothDevice device, boolean autoConnect) {
-        RxBleLog.v("Connecting without reflection");
+        RxBleLog.d("Connecting without reflection");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return device.connectGatt(context, autoConnect, bluetoothGattCallback, TRANSPORT_LE);
@@ -100,7 +101,7 @@ public class BleConnectionCompat {
 
     private boolean connectUsingReflection(BluetoothGatt bluetoothGatt, BluetoothGattCallback bluetoothGattCallback, boolean autoConnect)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
-        RxBleLog.v("Connecting using reflection");
+        RxBleLog.d("Connecting using reflection");
         setAutoConnectValue(bluetoothGatt, autoConnect);
         Method connectMethod = bluetoothGatt.getClass().getDeclaredMethod("connect", Boolean.class, BluetoothGattCallback.class);
         connectMethod.setAccessible(true);
@@ -112,7 +113,7 @@ public class BleConnectionCompat {
             throws IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor bluetoothGattConstructor = BluetoothGatt.class.getDeclaredConstructors()[0];
         bluetoothGattConstructor.setAccessible(true);
-        RxBleLog.v("Found constructor with args count = " + bluetoothGattConstructor.getParameterTypes().length);
+        RxBleLog.d("Found constructor with args count = " + bluetoothGattConstructor.getParameterTypes().length);
 
         if (bluetoothGattConstructor.getParameterTypes().length == 4) {
             return (BluetoothGatt) (bluetoothGattConstructor.newInstance(context, iBluetoothGatt, remoteDevice, TRANSPORT_LE));
