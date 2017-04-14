@@ -90,7 +90,7 @@ public class BleConnectionCompat {
     }
 
     private BluetoothGatt connectGattCompat(BluetoothGattCallback bluetoothGattCallback, BluetoothDevice device, boolean autoConnect) {
-        RxBleLog.d("Connecting without reflection");
+        RxBleLog.d("Connecting without reflection " + Thread.currentThread().getName());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return device.connectGatt(context, autoConnect, bluetoothGattCallback, TRANSPORT_LE);
