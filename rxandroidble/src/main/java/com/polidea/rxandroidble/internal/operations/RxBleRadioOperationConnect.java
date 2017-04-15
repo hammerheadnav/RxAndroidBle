@@ -184,7 +184,8 @@ public class RxBleRadioOperationConnect extends RxBleRadioOperation<BluetoothGat
             @Override
             public Observable<BluetoothGatt> call(Observable<BluetoothGatt> bluetoothGattObservable) {
                 return autoConnect
-                        ? bluetoothGattObservable
+                        ? bluetoothGattObservable.timeout(connectTimeout.timeout, connectTimeout.timeoutTimeUnit,
+                        prepareConnectionTimeoutErrorObservable(), connectTimeout.timeoutScheduler)
                         : bluetoothGattObservable
                         .timeout(connectTimeout.timeout, connectTimeout.timeoutTimeUnit,
                                 prepareConnectionTimeoutErrorObservable(), connectTimeout.timeoutScheduler);

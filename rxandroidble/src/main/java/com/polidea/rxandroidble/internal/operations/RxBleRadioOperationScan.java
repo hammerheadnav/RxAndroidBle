@@ -3,7 +3,6 @@ package com.polidea.rxandroidble.internal.operations;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.os.DeadObjectException;
-
 import com.polidea.rxandroidble.exceptions.BleException;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 import com.polidea.rxandroidble.internal.RxBleInternalScanResult;
@@ -11,13 +10,9 @@ import com.polidea.rxandroidble.internal.RxBleLog;
 import com.polidea.rxandroidble.internal.RxBleRadioOperation;
 import com.polidea.rxandroidble.internal.util.RxBleAdapterWrapper;
 import com.polidea.rxandroidble.internal.util.UUIDUtil;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
-
-import rx.Observable;
-import rx.subjects.PublishSubject;
 
 public class RxBleRadioOperationScan extends RxBleRadioOperation<RxBleInternalScanResult> {
 
@@ -26,7 +21,6 @@ public class RxBleRadioOperationScan extends RxBleRadioOperation<RxBleInternalSc
     private volatile boolean isStopped = false;
 
     private final BluetoothAdapter.LeScanCallback leScanCallback;
-    private final PublishSubject<RxBleInternalScanResult> publishSubject = PublishSubject.create();
 
     public RxBleRadioOperationScan(UUID[] filterServiceUUIDs, RxBleAdapterWrapper rxBleAdapterWrapper, final UUIDUtil uuidUtil) {
 
@@ -46,16 +40,11 @@ public class RxBleRadioOperationScan extends RxBleRadioOperation<RxBleInternalSc
             public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
 
                 if (!isFilterDefined || uuidUtil.extractUUIDs(scanRecord).containsAll(filterUuids)) {
-                    RxBleLog.e("*** GOT DEVICE PASSING DOWN SCAN **");
-                    publishSubject.onNext(new RxBleInternalScanResult(device, rssi, scanRecord));
+                    RxBleLog.e("****** GOT DEVICE. PASSING DOWN**** ");
+                    RxBleRadioOperationScan.this.onNext(new RxBleInternalScanResult(device, rssi, scanRecord));
                 }
             }
         };
-    }
-
-    @Override
-    public Observable<RxBleInternalScanResult> asObservable() {
-        return publishSubject.asObservable();
     }
 
     @Override
