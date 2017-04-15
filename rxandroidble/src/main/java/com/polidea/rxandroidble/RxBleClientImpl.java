@@ -8,6 +8,7 @@ import com.polidea.rxandroidble.RxBleAdapterStateObservable.BleAdapterState;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 import com.polidea.rxandroidble.internal.RxBleDeviceProvider;
 import com.polidea.rxandroidble.internal.RxBleInternalScanResult;
+import com.polidea.rxandroidble.internal.RxBleLog;
 import com.polidea.rxandroidble.internal.RxBleRadio;
 import com.polidea.rxandroidble.internal.operations.RxBleRadioOperationScan;
 import com.polidea.rxandroidble.internal.util.LocationServicesStatus;
@@ -142,6 +143,7 @@ class RxBleClientImpl extends RxBleClient {
                     public void call() {
 
                         synchronized (queuedScanOperations) {
+                            RxBleLog.e("** STOPPPING SCAN OPERATION ***");
                             scanOperation.stop();
                             queuedScanOperations.remove(filteredUUIDs);
                         }
