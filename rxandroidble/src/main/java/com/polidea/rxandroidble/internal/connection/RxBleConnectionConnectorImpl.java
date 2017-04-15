@@ -62,7 +62,8 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                         .setAutoConnect(autoConnect)
                         .build();
 
-                return Observable.merge(enqueueConnectOperation(operationConnect), connectionComponent.gattCallback().<BluetoothGatt>observeDisconnect())
+                return Observable.merge(enqueueConnectOperation(operationConnect),
+                        connectionComponent.gattCallback().<BluetoothGatt>observeDisconnect())
                         .doOnError(new Action1<Throwable>() {
                             @Override
                             public void call(Throwable throwable) {
