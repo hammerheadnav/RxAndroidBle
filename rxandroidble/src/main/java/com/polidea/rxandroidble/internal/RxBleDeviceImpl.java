@@ -57,6 +57,7 @@ class RxBleDeviceImpl implements RxBleDevice {
             @Override
             public Observable<RxBleConnection> call() {
 
+                
                 if (isConnected.compareAndSet(false, true)) {
                     return connector.prepareConnection(autoConnect)
                             .doOnSubscribe(new Action0() {
