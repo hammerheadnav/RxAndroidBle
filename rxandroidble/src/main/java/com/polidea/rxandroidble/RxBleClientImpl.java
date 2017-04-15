@@ -56,6 +56,7 @@ class RxBleClientImpl extends RxBleClient {
         this.rxBleDeviceProvider = rxBleDeviceProvider;
         this.executorService = executorService;
     }
+
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
@@ -136,6 +137,7 @@ class RxBleClientImpl extends RxBleClient {
 
     private Observable<RxBleScanResult> createScanOperation(@Nullable final UUID[] filterServiceUUIDs) {
         final Set<UUID> filteredUUIDs = uuidUtil.toDistinctSet(filterServiceUUIDs);
+        RxBleLog.d("********** CREATING NEW SCAN OPERATION");
         final RxBleRadioOperationScan scanOperation = new RxBleRadioOperationScan(filterServiceUUIDs, rxBleAdapterWrapper, uuidUtil);
         return rxBleRadio.queue(scanOperation)
                 .doOnUnsubscribe(new Action0() {
@@ -162,7 +164,7 @@ class RxBleClientImpl extends RxBleClient {
     private void guardBluetoothAdapterAvailable() {
         if (!rxBleAdapterWrapper.hasBluetoothAdapter()) {
             throw new UnsupportedOperationException("RxAndroidBle library needs a BluetoothAdapter to be available in the system to work."
-            + " If this is a test on an emulator then you can use 'https://github.com/Polidea/RxAndroidBle/tree/master/mockrxandroidble'");
+                    + " If this is a test on an emulator then you can use 'https://github.com/Polidea/RxAndroidBle/tree/master/mockrxandroidble'");
         }
     }
 }
