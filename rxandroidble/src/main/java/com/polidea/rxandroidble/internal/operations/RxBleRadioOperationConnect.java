@@ -104,6 +104,7 @@ public class RxBleRadioOperationConnect extends RxBleRadioOperation<BluetoothGat
                 @Override
                 public void call(Throwable throwable) {
                     RxBleLog.d("*********** isSubscribed ERROR ERROR");
+                    isSubscribed.onNext(false);
                 }
             })
             .share();
