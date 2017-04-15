@@ -163,9 +163,10 @@ class RxBleClientImpl extends RxBleClient {
 
     private void guardBluetoothAdapterAvailable() {
         if (!rxBleAdapterWrapper.hasBluetoothAdapter()) {
-            throw new UnsupportedOperationException("RxAndroidBle library needs" +
-                    " a BluetoothAdapter to be available in the system to work."
-                    + " If this is a test on an emulator then you can use 'https://github.com/Polidea/RxAndroidBle/tree/master/mockrxandroidble'");
+            throw new UnsupportedOperationException("RxAndroidBle library needs"
+                    + " a BluetoothAdapter to be available in the system to work."
+                    + " If this is a test on an emulator then you can use "
+                    + "'https://github.com/Polidea/RxAndroidBle/tree/master/mockrxandroidble'");
         }
     }
 }
