@@ -137,7 +137,19 @@ public class RxBleRadioOperationConnect extends RxBleRadioOperation<BluetoothGat
 
 
         getConnectedBluetoothGatt()
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        RxBleLog.d("*********** isSubscribed ERROR ERROR FIRST");
+                    }
+                })
                 .compose(wrapWithTimeoutWhenNotAutoconnecting())
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        RxBleLog.d("*********** isSubscribed ERROR ERROR SECOND");
+                    }
+                })
                 // when there are no subscribers there is no point of continuing work -> next will be disconnect operation
                 .takeUntil(asObservableHasNoSubscribers().doOnNext(new Action1<Boolean>() {
                     @Override
