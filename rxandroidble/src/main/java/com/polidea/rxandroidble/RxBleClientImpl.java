@@ -134,19 +134,24 @@ class RxBleClientImpl extends RxBleClient {
         });
     }
 
-    private Observable<RxBleScanResult> initializeScan(@Nullable UUID[] filterServiceUUIDs) {
-        final Set<UUID> filteredUUIDs = uuidUtil.toDistinctSet(filterServiceUUIDs);
+    private Observable<RxBleScanResult> initializeScan(@Nullable final UUID[] filterServiceUUIDs) {
+        return Observable.defer(new Func0<Observable<RxBleScanResult>>() {
+            @Override
+            public Observable<RxBleScanResult> call() {
+                final Set<UUID> filteredUUIDs = uuidUtil.toDistinctSet(filterServiceUUIDs);
 
-        synchronized (queuedScanOperations) {
-            Observable<RxBleScanResult> matchingQueuedScan = queuedScanOperations.get(filteredUUIDs);
+                synchronized (queuedScanOperations) {
+                    Observable<RxBleScanResult> matchingQueuedScan = queuedScanOperations.get(filteredUUIDs);
 
             if (matchingQueuedScan == null) {
                 matchingQueuedScan = createScanOperationApi18(filterServiceUUIDs);
                 queuedScanOperations.put(filteredUUIDs, matchingQueuedScan);
             }
 
-            return matchingQueuedScan;
-        }
+                    return matchingQueuedScan;
+                }
+            }
+        });
     }
 
     private <T> Observable<T> bluetoothAdapterOffExceptionObservable() {
@@ -199,7 +204,7 @@ class RxBleClientImpl extends RxBleClient {
     private void guardBluetoothAdapterAvailable() {
         if (!rxBleAdapterWrapper.hasBluetoothAdapter()) {
             throw new UnsupportedOperationException("RxAndroidBle library needs a BluetoothAdapter to be available in the system to work."
-            + " If this is a test on an emulator then you can use 'https://github.com/Polidea/RxAndroidBle/tree/master/mockrxandroidble'");
+                    + " If this is a test on an emulator then you can use 'https://github.com/Polidea/RxAndroidBle/tree/master/mockrxandroidble'");
         }
     }
 
