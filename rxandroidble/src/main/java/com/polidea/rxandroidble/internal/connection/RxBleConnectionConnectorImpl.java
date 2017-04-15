@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.functions.Actions;
 import rx.functions.Func0;
 import rx.functions.Func1;
@@ -62,6 +63,12 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                         .build();
 
                 return enqueueConnectOperation(operationConnect)
+                        .doOnError(new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                RxBleLog.e("ERRORRR ******************* CONNECTION");
+                            }
+                        })
                         .doOnTerminate(new Action0() {
                             @Override
                             public void call() {
