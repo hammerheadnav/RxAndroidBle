@@ -62,7 +62,7 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                         .setAutoConnect(autoConnect)
                         .build();
 
-                return enqueueConnectOperation(operationConnect)
+                return Observable.merge(enqueueConnectOperation(operationConnect), connectionComponent.gattCallback().<BluetoothGatt>observeDisconnect())
                         .doOnError(new Action1<Throwable>() {
                             @Override
                             public void call(Throwable throwable) {
@@ -78,10 +78,7 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                         .flatMap(new Func1<BluetoothGatt, Observable<RxBleConnection>>() {
                             @Override
                             public Observable<RxBleConnection> call(final BluetoothGatt bluetoothGatt) {
-                                return Observable.merge(
-                                        justOnNext(connectionComponent.rxBleConnection()),
-                                        connectionComponent.gattCallback().<RxBleConnection>observeDisconnect()
-                                );
+                                return justOnNext(connectionComponent.rxBleConnection());
                             }
                         })
                         .doOnError(new Action1<Throwable>() {
