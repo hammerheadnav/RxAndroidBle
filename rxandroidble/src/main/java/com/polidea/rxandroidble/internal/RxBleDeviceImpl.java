@@ -75,6 +75,7 @@ class RxBleDeviceImpl implements RxBleDevice {
                             .doOnUnsubscribe(new Action0() {
                                 @Override
                                 public void call() {
+                                    RxBleLog.e("TERMINATED FROM ESTABLIST");
                                     connectionStateSubject.onNext(DISCONNECTED);
                                     isConnected.set(false);
                                 }
