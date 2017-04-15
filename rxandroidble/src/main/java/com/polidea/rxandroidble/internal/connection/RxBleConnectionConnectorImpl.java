@@ -84,6 +84,12 @@ public class RxBleConnectionConnectorImpl implements RxBleConnection.Connector {
                                 );
                             }
                         })
+                        .doOnError(new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                RxBleLog.e("ERRORRR FOUNDNDNDNDN******************* CONNECTION");
+                            }
+                        })
                         .doOnUnsubscribe(disconnect(connectionComponent.disconnectOperation()));
             }
 
