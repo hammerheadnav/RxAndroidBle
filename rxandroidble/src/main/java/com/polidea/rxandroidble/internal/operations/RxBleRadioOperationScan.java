@@ -59,6 +59,7 @@ public class RxBleRadioOperationScan extends RxBleRadioOperation<RxBleInternalSc
                 synchronized (this) { // synchronization added for stopping the scan
                     isStarted = true;
                     if (isStopped) {
+                        RxBleLog.e("STOPPING SCAN INSIDEEEE");
                         stop();
                     }
                 }
