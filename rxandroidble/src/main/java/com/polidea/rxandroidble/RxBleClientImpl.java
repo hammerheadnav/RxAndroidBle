@@ -103,10 +103,10 @@ class RxBleClientImpl extends RxBleClient {
         synchronized (queuedScanOperations) {
             Observable<RxBleScanResult> matchingQueuedScan = queuedScanOperations.get(filteredUUIDs);
 
-            if (matchingQueuedScan == null) {
+//            if (matchingQueuedScan == null) {
                 matchingQueuedScan = createScanOperation(filterServiceUUIDs);
                 queuedScanOperations.put(filteredUUIDs, matchingQueuedScan);
-            }
+//            }
 
             return matchingQueuedScan;
         }
