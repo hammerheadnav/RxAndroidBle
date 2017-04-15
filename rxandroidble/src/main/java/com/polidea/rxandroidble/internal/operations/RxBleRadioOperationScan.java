@@ -60,7 +60,7 @@ public class RxBleRadioOperationScan extends RxBleRadioOperation<RxBleInternalSc
                     isStarted = true;
                     if (isStopped) {
                         RxBleLog.e("STOPPING SCAN INSIDEEEE");
-                        stop();
+//                        stop();
                     }
                 }
             }
