@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.polidea.rxandroidble.RxBleConnection;
 import com.polidea.rxandroidble.RxBleDevice;
-import com.polidea.rxandroidble.exceptions.BleAlreadyConnectedException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -88,7 +87,8 @@ class RxBleDeviceImpl implements RxBleDevice {
                                 }
                             });
                 } else {
-                    return Observable.error(new BleAlreadyConnectedException(bluetoothDevice.getAddress()));
+                    RxBleLog.e("SENDING OBSERVABLE NEVER");
+                    return Observable.never();
                 }
             }
         });
