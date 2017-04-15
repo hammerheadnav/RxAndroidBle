@@ -46,6 +46,7 @@ public class RxBleRadioOperationScan extends RxBleRadioOperation<RxBleInternalSc
             public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
 
                 if (!isFilterDefined || uuidUtil.extractUUIDs(scanRecord).containsAll(filterUuids)) {
+                    RxBleLog.e("*** GOT DEVICE PASSING DOWN SCAN **");
                     publishSubject.onNext(new RxBleInternalScanResult(device, rssi, scanRecord));
                 }
             }
