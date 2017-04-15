@@ -72,6 +72,13 @@ class RxBleDeviceImpl implements RxBleDevice {
                                     connectionStateSubject.onNext(CONNECTED);
                                 }
                             })
+                            .doOnError(new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    RxBleLog.e("ERROROROROR FROM ESTABLIST");
+                                    isConnected.set(false);
+                                }
+                            })
                             .doOnUnsubscribe(new Action0() {
                                 @Override
                                 public void call() {
