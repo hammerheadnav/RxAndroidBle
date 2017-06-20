@@ -1,6 +1,5 @@
 package com.polidea.rxandroidble.internal.util;
 
-import android.os.Build;
 
 import com.polidea.rxandroidble.ClientComponent;
 
@@ -39,7 +38,7 @@ public class LocationServicesStatus {
     }
 
     private boolean isLocationPermissionGrantedRequired() {
-        return deviceSdk >= Build.VERSION_CODES.M;
+        return false;
     }
 
     /**
@@ -50,8 +49,6 @@ public class LocationServicesStatus {
      * @return true if Location Services need to be turned ON
      */
     private boolean isLocationProviderEnabledRequired() {
-        return !isAndroidWear
-                && targetSdk >= Build.VERSION_CODES.M
-                && deviceSdk >= Build.VERSION_CODES.M;
+        return false;
     }
 }

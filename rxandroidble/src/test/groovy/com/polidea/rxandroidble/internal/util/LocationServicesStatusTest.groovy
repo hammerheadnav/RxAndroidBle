@@ -72,40 +72,33 @@ class LocationServicesStatusTest extends Specification {
     }
 
     @Unroll
-    def "(SDK >=23) isLocationPermissionOk should return value from CheckerLocationPermission.isLocationPermissionGranted (permissionGranted:#permissionGranted SDK:#sdkVersion)"() {
+    def "(SDK >=23) isLocationPermissionOk should always return true (permissionGranted:#permissionGranted SDK:#sdkVersion)"() {
 
         given:
         mockDeviceSdk = sdkVersion
         prepareObjectUnderTest()
-        mockCheckerLocationPermission.isLocationPermissionGranted() >> permissionGranted
 
         expect:
-        objectUnderTest.isLocationPermissionOk() == permissionGranted
+        objectUnderTest.isLocationPermissionOk() == true
 
         where:
         [sdkVersion, permissionGranted] << [sdkVersionsPostM, [true, false]].combinations()
     }
 
     @Unroll
-    def "should check location provider only if needed (deviceSdk:#sdkVersion targetSdk:#targetSdk isAndroidWear:#isAndroidWearValue)"() {
+    def "should not check location provider(deviceSdk:#sdkVersion targetSdk:#targetSdk isAndroidWear:#isAndroidWearValue)"() {
 
         given:
         mockDeviceSdk = sdkVersion
         mockApplicationTargetSdk = targetSdk
         mockIsAndroidWear = isAndroidWearValue
         prepareObjectUnderTest()
-        int expectedCalls
-        if (sdkVersion >= Build.VERSION_CODES.M && targetSdk >= Build.VERSION_CODES.M && !isAndroidWearValue) {
-            expectedCalls = 1
-        } else {
-            expectedCalls = 0
-        }
 
         when:
         objectUnderTest.isLocationProviderOk()
 
         then:
-        expectedCalls * mockCheckerLocationProvider.isLocationProviderEnabled() >> true
+        0 * mockCheckerLocationProvider.isLocationProviderEnabled() >> true
 
         where:
         [sdkVersion, targetSdk, isAndroidWearValue] << [sdkVersions, sdkVersions, isAndroidWear].combinations()
