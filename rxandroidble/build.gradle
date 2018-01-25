@@ -59,7 +59,7 @@ tasks.whenTaskAdded { task ->
 dependencies {
     api rootProject.ext.libs.rxjava
     api rootProject.ext.libs.support_annotations
-    implementation rootProject.ext.libs.rxrelay
+    api rootProject.ext.libs.rxrelay
     implementation rootProject.ext.libs.dagger
     annotationProcessor rootProject.ext.libs.dagger_compiler
 
